@@ -149,13 +149,12 @@ criterion = nn.CrossEntropyLoss()
 max_lr = 0.02 
 weight_decay = 0.0001 
 optimizer = optim.Adam(net.parameters(),lr = 0.001, weight_decay=weight_decay)  
-# optimizer = optim.SGD(net.parameters(),lr =  0.001, weight_decay=weight_decay, momentum=0.9)
+
 
 
 def train_model(epochs):  
     criterion = nn.CrossEntropyLoss() 
-    # here the optimizer used is the stochastic gradient descent 
-    for epoch in range(epochs):  # loop over the dataset multiple times  
+    for epoch in range(epochs): 
 
         iterations = 0
         runningLoss = 0.0  
