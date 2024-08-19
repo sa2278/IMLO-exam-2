@@ -118,7 +118,6 @@ class ResNet(nn.Module):
             self.layer4.add_module('conv3_%d'%(i+1,), resblock(filters[4], filters[4], downsample=False))
 
         self.gap = nn.AdaptiveAvgPool2d(1)  
-        #1024
         self.fc1 = nn.Linear(filters[4], (1024))  
         self.dropout = nn.Dropout(0.5) 
         self.fc2 = nn.Linear(1024, 102) 
@@ -150,18 +149,12 @@ criterion = nn.CrossEntropyLoss()
 max_lr = 0.02 
 weight_decay = 0.0001 
 optimizer = optim.Adam(net.parameters(),lr = 0.001, weight_decay=weight_decay)  
-#0.001 and 0.9
 # optimizer = optim.SGD(net.parameters(),lr =  0.001, weight_decay=weight_decay, momentum=0.9)
-
-
-
 
 
 def train_model(epochs):  
     criterion = nn.CrossEntropyLoss() 
     # here the optimizer used is the stochastic gradient descent 
-
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer,eta_min=0.000015,T_max = epochs*len(train_dataloader))
     for epoch in range(epochs):  # loop over the dataset multiple times  
 
         iterations = 0
@@ -190,12 +183,8 @@ def train_model(epochs):
 
             runningLoss += loss.item()    
             trainAccuracy += (labels.data == predicted).sum().item() 
-            # scheduler.step() 
         writer.add_scalar("Loss/train", loss, epoch) 
- 
-        # print("the number correct is: ", trainAccuracy,  " out of : 1020")
-        # randomSampler = torch.utils.data.RandomSampler(validationset, num_samples=100, replacement=False) 
-        # local_validate_dataloader = DataLoader(validationset, batch_size=20, sampler= randomSampler) 
+
         valRunningLoss = 0
         valAccuracy = 0   
         valAccuracyPercent = 0
@@ -215,7 +204,7 @@ def train_model(epochs):
             
         print("the number correct is: ", valAccuracy,  " out of :", count)
         valAccuracyPercent = 100 * valAccuracy / count
-        # the number of incorrect predictions the model creates
+
         validationLoss = valRunningLoss / len(validation_dataloader)    
         display = f'Epoch: {epoch + 1}/{epochs}, itrs: {iterations}, '
         display += f'Validation loss: {round(validationLoss, 4)}, '
@@ -225,17 +214,11 @@ def train_model(epochs):
         runningLoss = 0
         iterations += 1   
         writer.add_scalar("Accuracy/train", valAccuracyPercent, epoch)   
-
-
-
-
-        
+  
     display2 = f'Finished training, '   
     display2 += f'Final training accuracy: {round(valAccuracyPercent, 4)}%, '
     display2 += f'Final training loss: {loss}, '
     print(display2)   
-
-
 
 
 def testing_model(): 
@@ -257,7 +240,6 @@ def testing_model():
     print(testAccuracy) 
     
     
-    # the number of incorrect predictions the model creates
     testLoss = runningLoss / count    
     testAccuracy = 100 * testAccuracy / count
     display = f'testing loss: {round(testLoss, 4)}, '
@@ -268,17 +250,6 @@ def use_Net(image):
     image.to(deviceType()) 
     output = net(image)
     return output.max(dim = 1)[1]
-
-
-
-
-
-
-
-
-
-
-
 
 dataiter = iter(single_test_dataloader)
 imagesLocal, labelsLocal = next(dataiter)   
